@@ -1,6 +1,8 @@
 # landonbin
 A client and server implementation of code/text snippet storage, similar to Pastebin. Features a CLI tool to easily upload the contents of files to your own webserver, so you can use your own domain. Supports syntax highlighting, paste expiry, and API keys. 
 
+Example Paste: [https://api.landon.pw/pastes/648ce77435625b0015fbd7ea](https://api.landon.pw/pastes/648ce77435625b0015fbd7ea)
+
 
 ## Server
 The server is written in JavaScript, and uses NodeJS and the Express framework. It uses MongoDB as a database, and the mongoose library to interact with the database. The API endpoint is `/pastes`, and accepts POST requests with the following JSON body:
