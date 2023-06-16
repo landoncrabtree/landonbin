@@ -1,0 +1,25 @@
+doctype html
+head
+	title #{title}
+	meta(name='robots' content='noindex,nofollow')
+	link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css')
+body
+	button(onclick=`window.location.href="/pastes/raw/${id}"`) View Raw Paste
+	button(onclick='download()') Download Paste
+	if expiry == 'Never'
+		p This paste does not expire.
+	else
+		p This paste expires on #{expiry}.
+	pre
+		code(id="text-container").
+			!{content}
+	script.
+		function download() {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(document.getElementById("text-container").innerText));
+			element.setAttribute('download', 'paste.txt');
+			element.style.display = 'none';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+		}
