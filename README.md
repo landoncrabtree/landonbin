@@ -3,7 +3,7 @@ A client and server implementation of code/text snippet storage, similar to Past
 
 
 ## Server
-The server is written in JavaScript, and uses the NodeJS and the Express framework. It uses MongoDB as a database, and the mongoose library to interact with the database. The API endpoint is `/pastes`, and accepts POST requests with the following JSON body:
+The server is written in JavaScript, and uses NodeJS and the Express framework. It uses MongoDB as a database, and the mongoose library to interact with the database. The API endpoint is `/pastes`, and accepts POST requests with the following JSON body:
 
 ```json
 {
