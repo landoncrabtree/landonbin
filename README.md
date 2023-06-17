@@ -63,7 +63,14 @@ mongo
 It's recommended to [enable authentication](https://medium.com/mongoaudit/how-to-enable-authentication-on-mongodb-b9e8a924efac) on the MongoDB database.
 
 ## Client (CLI)
-The client is a command-line interface (CLI) that allows you to upload snippets. It is written in Rust, and uses the reqwest crate to make HTTP requests to the server. The client can be configured by editing the `client/src/landonbin.rs` file. The default server URL is `http://api.example.com/pastes`, and the default API key is `my-secret-api-key`.
+The client is a command-line interface (CLI) that allows you to upload snippets. It is written in Rust, and uses the reqwest crate to make HTTP requests to the server. The client can be configured by editing the `client/src/landonbin.rs` file. The default server URL is `http://api.example.com/pastes`, and the default API key is `my-secret-api-key`. 
+
+The client also supports automatically copying the paste URL to your clipboard. Simply set the `COPY_CLIPBOARD` environment variable to `TRUE`. This is supported on macOS, Windows, and Linux. 
+
+```
+echo "export COPY_CLIPBOARD=TRUE" >> ~/.bashrc # Linux
+echo "export COPY_CLIPBOARD=TRUE" >> ~/.zshrc # macOS
+```
 
 ### Building
 To build the client, you must have Rust installed. You can install Rust by following the instructions [here](https://www.rust-lang.org/tools/install). Once you have Rust installed, you can build the client by running `cargo build --release` in the `client` directory. The binary will be located at `client/target/release/landonbin`.
