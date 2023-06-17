@@ -7,26 +7,30 @@ use serde_json::json;
 use atty::Stream;
 use clipboard::{ClipboardContext, ClipboardProvider};
 
+// Function to encode text to base64
 fn b64encode(text_to_encode: &str) -> String {
     return general_purpose::STANDARD_NO_PAD.encode(text_to_encode.as_bytes());
 }
 
+// Function to post data to the API
 fn post_data(content: &str, expiry: &str) {
     let data = json!({ "content": content, "expiry": expiry });
     let client = Client::new();
     let res = client
         .post("https://api.example.com/pastes")
         .header("Content-Type", "application/json")
-        .header("X-API-Key", "my-api-key")
+        .header("X-API-Key", "")
         .json(&data)
         .send();
-
     match res {
         Ok(response) => {
             if response.status().is_success() {
                 let json_data: serde_json::Value = response.json().unwrap();
                 if let Some(url) = json_data["url"].as_str() {
                     println!("{}", url);
+                    if !can_copy_clipboard() {
+                        return;
+                    }
                     let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
                     ctx.set_contents(url.to_string()).unwrap();
                 } else {
@@ -38,6 +42,35 @@ fn post_data(content: &str, expiry: &str) {
             }
         }
         Err(e) => eprintln!("Request failed: {}", e),
+    }
+}
+
+// Retrieve the COPY_CLIPBOARD environment variable
+fn can_copy_clipboard() -> bool {
+    let copy_clipboard = match env::var("COPY_CLIPBOARD") {
+        Ok(val) => val,
+        Err(_e) => "FALSE".to_string(),
+    };
+
+    return string_to_bool(&copy_clipboard);
+}
+
+// Helper function to convert string to bool
+fn string_to_bool(s: &str) -> bool {
+    match s {
+        "TRUE" => true,
+        "True" => true,
+        "true" => true,
+        "1" => true,
+        "t" => true,
+        "T" => true,
+        "FALSE" => false,
+        "False" => false,
+        "false" => false,
+        "0" => false,
+        "f" => false,
+        "F" => false,
+        _ => false,
     }
 }
 
