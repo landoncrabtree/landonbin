@@ -24,21 +24,37 @@ fn post_data(content: &str, expiry: &str) {
         .send();
     match res {
         Ok(response) => {
+            eprintln!("Response Status: {}", response.status());
+            eprintln!("Response Headers: {:?}", response.headers());
+
+            // Check if the response is successful before consuming it
             if response.status().is_success() {
-                let json_data: serde_json::Value = response.json().unwrap();
-                if let Some(url) = json_data["url"].as_str() {
-                    println!("{}", url);
-                    if !can_copy_clipboard() {
-                        return;
+                let raw_response = response
+                    .text()
+                    .unwrap_or_else(|_| "Failed to retrieve body".to_string());
+
+                match serde_json::from_str::<serde_json::Value>(&raw_response) {
+                    Ok(json_data) => {
+                        if let Some(url) = json_data["url"].as_str() {
+                            println!("{}", url);
+                            if !can_copy_clipboard() {
+                                return;
+                            }
+                            let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+                            ctx.set_contents(url.to_string()).unwrap();
+                        } else {
+                            println!("Unexpected Response Format: {}", json_data);
+                        }
                     }
-                    let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
-                    ctx.set_contents(url.to_string()).unwrap();
-                } else {
-                    println!("Raw Response: {}", json_data);
+                    Err(_) => {
+                        eprintln!("Invalid JSON Response: {}", raw_response);
+                    }
                 }
             } else {
-                let error_message: serde_json::Value = response.json().unwrap();
-                eprintln!("Raw Response: {}", error_message);
+                let raw_response = response
+                    .text()
+                    .unwrap_or_else(|_| "Failed to retrieve body".to_string());
+                eprintln!("Error Response: {}", raw_response);
             }
         }
         Err(e) => eprintln!("Request failed: {}", e),
